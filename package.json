@@ -1,0 +1,21 @@
+{
+  "name": "uhura",
+  "version": "0.0.1",
+  "description": "server-to-server event emitter wire protocol",
+  "main": "index.js",
+  "repository": "",
+  "author": "Stephen Belanger <admin@stephenbelanger.com>",
+  "license": "MIT",
+  "dependencies": {
+    "better-emit-stream": "0.0.x",
+    "JSONStream": "0.6.x",
+    "connect": "2.x"
+  },
+  "devDependencies": {
+    "should": "*",
+    "mocha": "*"
+  },
+  "scripts": {
+    "test": "mocha -r should -G -R spec"
+  }
+}
