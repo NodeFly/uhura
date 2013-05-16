@@ -1,5 +1,17 @@
 var Client = require('./lib/client')
-	, Server = require('./lib/server');
+	, Server = require('./lib/server')
+	, Session = require('./lib/session');
+
+
+// This is lowercase to mirror how connect.session works
+// 
+//   var RedisStore = require('connect-redis')(Uhura);
+//   var server = Uhura.createServer({
+//     store: new RedisStore(options)
+//   }, function (socket) {
+//     // Session-aware socket/emitter
+//   });
+exports.session = Session;
 
 
 // Create a client
@@ -13,7 +25,8 @@ exports.createClient = function (port, host) {
 
 // Create a server
 exports.Server = Server;
-exports.createServer = function (cb) {
+exports.createServer = function (options, cb) {
+
 	var server = new Server;
 	return server.start(cb);
 };
