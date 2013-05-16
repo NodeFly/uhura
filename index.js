@@ -26,7 +26,10 @@ exports.createClient = function (port, host) {
 // Create a server
 exports.Server = Server;
 exports.createServer = function (options, cb) {
-
-	var server = new Server;
+	if (typeof options === 'function') {
+		cb = options;
+		options = {};
+	}
+	var server = new Server(options);
 	return server.start(cb);
 };
