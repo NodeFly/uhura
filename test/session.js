@@ -20,14 +20,14 @@ describe('session', function () {
 		var c = Uhura.createClient(4567);
 	  c.autoReconnect();
 
-		var sid;
+		var sessionID;
 		c.once('connect', function () {
-			sid = c.get('sid');
+			sessionID = c.get('sessionID');
 		});
 
 		c.on('connect', after(2, function () {
-			if (c.get('sid') !== sid) {
-				next(new Error('sid does not match'));
+			if (c.get('sessionID') !== sessionID) {
+				next(new Error('sessionID does not match'));
 			}
 			c.disconnect();
 			server.close(next);
