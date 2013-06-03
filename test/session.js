@@ -2,9 +2,11 @@ var Uhura = require('../');
 
 function after (t, fn) {
 	return function () {
-		t-- && t == 0 && fn();
-	}
+		t-- && t === 0 && fn();
+	};
 }
+
+var port = 12345;
 
 describe('session', function () {
 	this.timeout(5000);
@@ -15,10 +17,10 @@ describe('session', function () {
 				s.disconnect();
 			}, 100);
 		});
-		server.listen(4567);
-
-		var c = Uhura.createClient(4567);
-	  c.autoReconnect();
+		server.listen(port);
+		
+		var c = Uhura.createClient(port);
+		c.autoReconnect();
 
 		var sessionID;
 		c.once('connect', function () {
@@ -36,40 +38,40 @@ describe('session', function () {
 
 	it('should send changes to client', function (next) {
 		var server = Uhura.createServer(function (s) {
+			server.close(function () {
+				c.get('foo').should.equal('bar');
+				next();
+			});
+
+			c.once('_set', function () {
+				process.nextTick(function () {
+					s.disconnect();
+				});
+			});
 			s.set('foo', 'bar');
 		});
-		server.listen(4567);
+		server.listen(port);
 
-		var c = Uhura.createClient(4567);
-	  c.on('_set', function () {
-	  	process.nextTick(function () {
-	  		c.get('foo').should.equal('bar');
-	  		c.disconnect();
-	  	});
-	  });
-
-	  c.on('disconnect', function () {
-	  	server.close(next);
-	  });
+		var c = Uhura.createClient(port);
 	});
 
 	it('should send changes to server', function (next) {
 		var server = Uhura.createServer(function (s) {
 			s.on('_set', function () {
-		  	process.nextTick(function () {
-		  		s.get('foo').should.equal('bar');
-		  		s.disconnect();
-		  	});
+				process.nextTick(function () {
+					s.get('foo').should.equal('bar');
+					s.disconnect();
+				});
 			});
 		});
-		server.listen(4567);
+		server.listen(port);
 
-		var c = Uhura.createClient(4567);
+		var c = Uhura.createClient(port);
 		c.on('connect', function () {
 			c.set('foo', 'bar');
 		});
-	  c.on('disconnect', function () {
-	  	server.close(next);
-	  });
+		c.on('disconnect', function () {
+			server.close(next);
+		});
 	});
 });
