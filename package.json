@@ -15,6 +15,7 @@
     "mocha": "*"
   },
   "scripts": {
-    "test": "mocha -r should -G -R spec"
+    "test": "mocha -r should -G -R spec",
+    "coverage": "rm -rf lib-cov && jscoverage lib lib-cov && UHURA_COV=1 mocha -r should -G -R html-cov > lib-cov/index.html && open lib-cov/index.html"
   }
 }

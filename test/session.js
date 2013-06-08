@@ -44,9 +44,7 @@ describe('session', function () {
 			});
 
 			c.once('_set', function () {
-				process.nextTick(function () {
-					s.disconnect();
-				});
+				s.disconnect();
 			});
 			s.set('foo', 'bar');
 		});
