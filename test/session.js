@@ -14,7 +14,7 @@ describe('session', function () {
 	it('should keep session', function (next) {
 		var server = Uhura.createServer(function (s) {
 			setTimeout(function () {
-				s.disconnect();
+				s.socket.destroy();
 			}, 100);
 		});
 		server.listen(port);
@@ -44,7 +44,7 @@ describe('session', function () {
 			});
 
 			c.once('_set', function () {
-				s.disconnect();
+				s.socket.destroy();
 			});
 			s.set('foo', 'bar');
 		});
@@ -57,7 +57,7 @@ describe('session', function () {
 		var server = Uhura.createServer(function (s) {
 			s.on('_set', function () {
 				s.get('foo').should.equal('bar');
-				s.disconnect();
+				s.socket.destroy();
 			});
 		});
 		server.listen(port);

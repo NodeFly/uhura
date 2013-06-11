@@ -12,7 +12,7 @@ describe('reconnection', function () {
 	it('should reconnect when autoReconnect is enabled', function (next) {
 		var server = Uhura.createServer(function (s) {
 		  setTimeout(function () {
-			  s.disconnect();
+		  	s.socket.destroy();
 			}, 100)
 		})
 		server.listen(3333);
@@ -34,7 +34,7 @@ describe('reconnection', function () {
 
 		var server = Uhura.createServer(function (s) {
 			s.on('ping', function () {
-				s.disconnect();
+				s.socket.destroy();
 				done();
 			});
 		});
@@ -61,7 +61,7 @@ describe('reconnection', function () {
 		var server = Uhura.createServer(function (s) {
 			// Disconnect after 250ms
 			setTimeout(function () {
-				s.disconnect();
+				s.socket.destroy();
 				done();
 			}, 250);
 
