@@ -56,10 +56,8 @@ describe('session', function () {
 	it('should send changes to server', function (next) {
 		var server = Uhura.createServer(function (s) {
 			s.on('_set', function () {
-				process.nextTick(function () {
-					s.get('foo').should.equal('bar');
-					s.disconnect();
-				});
+				s.get('foo').should.equal('bar');
+				s.disconnect();
 			});
 		});
 		server.listen(port);
