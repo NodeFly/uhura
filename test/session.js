@@ -6,20 +6,27 @@ function after (t, fn) {
 	};
 }
 
-var port = 12345;
+var socket = './test/socket';
 
 describe('session', function () {
 	this.timeout(5000);
 
+	// Kill server and client after each test
+	var c, server;
+	afterEach(function (next) {
+		c.disconnect();
+		server.close(next);
+	});
+
 	it('should keep session', function (next) {
-		var server = Uhura.createServer(function (s) {
+		server = Uhura.createServer(function (s) {
 			setTimeout(function () {
 				s.socket.destroy();
 			}, 100);
 		});
-		server.listen(port);
+		server.listen(socket);
 		
-		var c = Uhura.createClient(port);
+		c = Uhura.createClient(socket);
 		c.autoReconnect();
 
 		var sessionID;
@@ -31,43 +38,40 @@ describe('session', function () {
 			if (c.get('sessionID') !== sessionID) {
 				next(new Error('sessionID does not match'));
 			}
-			c.disconnect();
-			server.close(next);
+			next();
 		}));
 	});
 
 	it('should send changes to client', function (next) {
-		var server = Uhura.createServer(function (s) {
-			server.close(function () {
-				c.get('foo').should.equal('bar');
-				next();
-			});
-
+		server = Uhura.createServer(function (s) {
 			c.once('_set', function () {
 				s.socket.destroy();
+				setTimeout(function () {
+					c.get('foo').should.equal('bar');
+					next()
+				}, 100);
 			});
+			
 			s.set('foo', 'bar');
 		});
-		server.listen(port);
+		server.listen(socket);
 
-		var c = Uhura.createClient(port);
+		c = Uhura.createClient(socket);
 	});
 
 	it('should send changes to server', function (next) {
-		var server = Uhura.createServer(function (s) {
+		server = Uhura.createServer(function (s) {
 			s.on('_set', function () {
 				s.get('foo').should.equal('bar');
 				s.socket.destroy();
 			});
 		});
-		server.listen(port);
+		server.listen(socket);
 
-		var c = Uhura.createClient(port);
+		c = Uhura.createClient(socket);
 		c.on('connect', function () {
 			c.set('foo', 'bar');
 		});
-		c.on('disconnect', function () {
-			server.close(next);
-		});
+		c.on('disconnect', next);
 	});
 });

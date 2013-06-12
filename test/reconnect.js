@@ -3,46 +3,49 @@ var Uhura = require('../');
 function after (t, fn) {
 	return function () {
 		t-- && t == 0 && fn();
-	}
+	};
 }
+
+var socket = './test/socket';
 
 describe('reconnection', function () {
 	this.timeout(5000);
 
-	it('should reconnect when autoReconnect is enabled', function (next) {
-		var server = Uhura.createServer(function (s) {
-		  setTimeout(function () {
-		  	s.socket.destroy();
-			}, 100)
-		})
-		server.listen(3333);
+	// Kill server and client after each test
+	var c, server;
+	afterEach(function (next) {
+		c.disconnect();
+		server.close(next);
+	});
 
-		var c = Uhura.createClient(3333);
+	it('should reconnect when autoReconnect is enabled', function (next) {
+		server = Uhura.createServer(function (s) {
+			setTimeout(function () {
+				s.socket.destroy();
+			}, 100);
+		});
+		server.listen(socket);
+
+		c = Uhura.createClient(socket);
 		c.autoReconnect();
 
-	  c.on('connect', after(2, function () {
-			server.close(next);
-			c.disconnect();
-	  }));
+		c.on('connect', after(2, next));
 	});
 
 	it('should continue receiving events after reconnection', function (next) {
-		var done = after(2, function () {
-			server.close(next);
-			c.disconnect();
-		});
+		var done = after(2, next);
 
-		var server = Uhura.createServer(function (s) {
+		server = Uhura.createServer(function (s) {
 			s.on('ping', function () {
-				s.socket.destroy();
 				done();
+				s.socket.destroy();
 			});
 		});
-		server.listen(4444);
+		server.listen(socket);
 
-		var c = Uhura.createClient(4444);
-	  c.autoReconnect();
-	  c.on('connect', function () {
+		c = Uhura.createClient(socket);
+		c.autoReconnect();
+		c.on('connect', function () {
 			c.send('ping');
 		});
 	});
@@ -51,14 +54,13 @@ describe('reconnection', function () {
 		var sent = [], received = [];
 
 		var done = after(3, function () {
-  		for (var i = 0; i < sent.length; i++) {
-	  		sent[i].should.equal(received[i]);
-	  	}
-	  	server.close(next);
-  		c.disconnect();
-		})
+			for (var i = 0; i < sent.length; i++) {
+				sent[i].should.equal(received[i]);
+			}
+			next();
+		});
 
-		var server = Uhura.createServer(function (s) {
+		server = Uhura.createServer(function (s) {
 			// Disconnect after 250ms
 			setTimeout(function () {
 				s.socket.destroy();
@@ -69,10 +71,10 @@ describe('reconnection', function () {
 			s.on('ping', function (v) {
 				received.push(v);
 			});
-		})
-		server.listen(5555);
+		});
+		server.listen(socket);
 
-		var c = Uhura.createClient(5555);
+		c = Uhura.createClient(socket);
 
 		// Send messages repeatedly
 		var timer = setInterval(function () {
@@ -81,9 +83,9 @@ describe('reconnection', function () {
 			sent.push(num);
 		}, 100);
 
-	  c.on('connect', after(3, function () {
-  		clearInterval(timer);
+		c.on('connect', after(3, function () {
+			clearInterval(timer);
 		}));
-	  c.autoReconnect();
+		c.autoReconnect();
 	});
 });
