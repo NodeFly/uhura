@@ -40,7 +40,17 @@ describe('basics', function () {
 	});
 
 	it('should emit disconnect on socket.destroy()', function (next) {
-	  c.once('disconnect', next);
-	  s.socket.destroy();
+		c.once('disconnect', next);
+		s.socket.destroy();
+	});
+
+	it('should log errors by default', function (next) {
+		var oldError = console.error;
+		console.error = function () {
+			next();
+			console.error = oldError;
+		};
+		c.socket.emit('error', new Error('This is an error'));
+		s.socket.destroy();
 	});
 });

@@ -88,4 +88,26 @@ describe('reconnection', function () {
 		}));
 		c.autoReconnect();
 	});
+
+	it('should start new session on cache miss', function (next) {
+		server = Uhura.createServer(function (s) {
+			s.session.destroy(function () {
+				s.socket.destroy();
+			});
+		});
+		server.listen(socket);
+
+		c = Uhura.createClient(socket);
+		c.autoReconnect();
+
+		var sids = [];
+		c.on('connect', function () {
+			sids.push(c.get('sessionID'));
+		});
+
+		c.on('connect', after(2, function () {
+			sids[0].should.not.equal(sids[1]);
+			next();
+		}));
+	});
 });
