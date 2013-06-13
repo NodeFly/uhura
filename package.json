@@ -1,6 +1,6 @@
 {
   "name": "uhura",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "server-to-server event emitter wire protocol",
   "main": "index.js",
   "repository": "",
