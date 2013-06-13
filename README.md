@@ -24,8 +24,23 @@ Uhura is a server-to-server event emitter wire protocol. It provides a shared ev
 
 ## API
 
-### Uhura.createServer(port, cb)
-Creates a net server that uses an event emitter to communicate. Callback receives a unique emitter for the net socket.
+### Uhura.createServer([options,] cb)
+
+Creates a net server that uses an event emitter to communicate. Callback
+receives a connection object for each new incoming connection.
+
+Returns a net.server, must call .listen() on it.
+
+options.store, key/value store, will be used as store[KEY] = VAL, when client
+does .set()
+
+defaults to connect/lib/middleware/session/memory, but something else should be
+used in production
+
+options.cookie, options.store.cookie = new Cookie(options.cookie)
+
+defaults to {}, not sure intended usage
+
 
 ### Uhura.createClient(port [, host] [, cb]) returns client emitter
 Create a client emitter. The port argument may be a number, a string, or an existing net.connect() instance. It also attaches a few extra methods, as seen below.
@@ -39,14 +54,26 @@ Flag the client to automatically reconnect, which an exponential backoff mechani
 ### client.disconnect()
 Disable auto-reconnection, if enabled, and closes the socket.
 
+XXX below APIs are supported by both the client, as well as a connection object
+
 ### client.send(event [, args...])
 This is identical to the interface for the emit() function seen on normal event emitters, except it sends to the remote server.
 
 ### client.set(key, val)
 Sets a value in the shared data store. This is also used to store session id for reconnection.
 
-### client.get(key)
+Client key/values in session are synced across on reconnections, and sent on
+change.
+
+Server side key/values are stuck into  createServer()'s options.session. On
+incoming connection, the session.sessionID is set across to the client.
+
+### client.get([key])
+
 Gets a value from the shared data store.
+
+if no key, return session object (a plain object on client, a connect
+    middleware session on server)
 
 ---
 
