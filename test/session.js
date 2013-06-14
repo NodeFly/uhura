@@ -1,4 +1,5 @@
-var Uhura = require('../');
+var Uhura = require('../')
+	, should = require('should');
 
 function after (t, fn) {
 	return function () {
@@ -73,5 +74,19 @@ describe('session', function () {
 			c.set('foo', 'bar');
 		});
 		c.on('disconnect', next);
+	});
+
+	it('should invalidate session', function (next) {
+		server = Uhura.createServer(function (s) {
+			c.on('invalidateSession', function () {
+				should.not.exist(c.get('sessionID'));
+				s.socket.destroy();
+				next();
+			});
+			s.invalidateSession();
+		});
+		server.listen(socket);
+		
+		c = Uhura.createClient(socket);
 	});
 });
