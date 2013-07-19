@@ -8,7 +8,8 @@
   "license": "MIT",
   "dependencies": {
     "JSONStream": "0.6.x",
-    "connect": "2.8.x"
+    "connect": "2.8.x",
+    "uid2": "0.0.*"
   },
   "devDependencies": {
     "should": "*",
