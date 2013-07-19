@@ -1,6 +1,6 @@
 {
   "name": "uhura",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "server-to-server event emitter wire protocol",
   "main": "index.js",
   "repository": "",
@@ -8,7 +8,7 @@
   "license": "MIT",
   "dependencies": {
     "JSONStream": "0.6.x",
-    "connect": "2.7.x"
+    "connect": "2.8.x"
   },
   "devDependencies": {
     "should": "*",
