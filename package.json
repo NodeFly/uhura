@@ -1,14 +1,15 @@
 {
   "name": "uhura",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "server-to-server event emitter wire protocol",
   "main": "index.js",
-  "repository": "",
+  "repository": "git://github.com/nodefly/uhura.git",
   "author": "Stephen Belanger <admin@stephenbelanger.com>",
   "license": "MIT",
   "dependencies": {
     "JSONStream": "0.6.x",
-    "connect": "2.7.x"
+    "connect": "2.8.x",
+    "uid2": "0.0.x"
   },
   "devDependencies": {
     "should": "*",
