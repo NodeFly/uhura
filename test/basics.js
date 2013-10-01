@@ -44,7 +44,8 @@ describe('basics', function () {
 		s.socket.destroy();
 	});
 
-	it('should log errors by default', function (next) {
+	it('should log errors when enabled', function (next) {
+		c.logErrors = true;
 		var oldError = console.error;
 		console.error = function () {
 			next();
