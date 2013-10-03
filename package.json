@@ -1,6 +1,6 @@
 {
   "name": "uhura",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "description": "server-to-server event emitter wire protocol",
   "main": "index.js",
   "repository": "git://github.com/nodefly/uhura.git",
@@ -9,7 +9,8 @@
   "dependencies": {
     "JSONStream": "0.6.x",
     "connect": "2.8.x",
-    "uid2": "0.0.x"
+    "uid2": "0.0.x",
+    "node-uuid": "~1.4.1"
   },
   "devDependencies": {
     "should": "*",

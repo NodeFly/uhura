@@ -54,4 +54,8 @@ describe('basics', function () {
 		c.socket.emit('error', new Error('This is an error'));
 		s.socket.destroy();
 	});
+
+	it('should send acknowledgements', function (next) {
+		c.send('ping', next);
+	});
 });
