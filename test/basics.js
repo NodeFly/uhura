@@ -26,7 +26,7 @@ describe('basics', function () {
 	});
 
 	it('should connect to server', function (next) {
-		c.once('connect', next);
+		c.once('connect', function () { next(); });
 	});
 
 	it('should receive server events', function (next) {
