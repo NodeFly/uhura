@@ -15,7 +15,8 @@
   "devDependencies": {
     "should": "*",
     "blanket": "~1.1.5",
-    "mocha": "*"
+    "mocha": "*",
+    "istanbul": "~0.1.44"
   },
   "scripts": {
     "test": "mocha -r should -G -R spec",
