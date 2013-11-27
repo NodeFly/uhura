@@ -2,3 +2,5 @@ test/socket
 node_modules
 lib-cov
 coverage
+*.tgz
+*.xml
