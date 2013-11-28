@@ -18,7 +18,6 @@
     "istanbul": "~0.1.44"
   },
   "scripts": {
-    "test": "mocha -r should -G -R spec",
-    "coverage": "rm -rf coverage && istanbul cover _mocha -- -r should -G -R spec; istanbul report"
+    "test": "istanbul test _mocha -r should -G -R spec"
   }
 }
