@@ -1,0 +1,9 @@
+*.attr
+*.cert
+*.conf
+*.csr
+*.key
+*.old
+*.p12
+*.txt
+/newcerts/
