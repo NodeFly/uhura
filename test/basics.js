@@ -18,6 +18,9 @@ describe('basics', function () {
 		});
 		server.listen(5555);
 		c = Uhura.createClient(5555);
+		c.on('error', function(err) {
+			throw err;
+		});
 	});
 
 	afterEach(function (next) {
