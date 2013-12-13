@@ -16,8 +16,8 @@ describe('basics', function () {
 			s = socket;
 			done();
 		});
-		server.listen(5555);
-		c = Uhura.createClient(5555);
+		server.listen(5555, '127.0.0.1');
+		c = Uhura.createClient(5555, '127.0.0.1');
 		c.on('error', function(err) {
 			throw err;
 		});
