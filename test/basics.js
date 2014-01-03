@@ -1,4 +1,5 @@
 var Uhura = require('../');
+var assert = require('assert');
 
 function after (t, fn) {
 	return function () {
@@ -53,6 +54,14 @@ describe('basics', function () {
 		};
 		c.socket.emit('error', new Error('This is an error'));
 		s.socket.destroy();
+	});
+
+	it('should not crash on malformed JSON', function (next) {
+		s.on('error', function (err) {
+			assert(/Unexpected "." at position/.test(err.message));
+			next();
+		});
+		c.socket.write('.');
 	});
 
 	it('should send acknowledgements', function (next) {
