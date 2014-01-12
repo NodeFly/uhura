@@ -64,6 +64,14 @@ describe('basics', function () {
 		c.socket.write('.');
 	});
 
+	it('should flush on disconnect', function (next) {
+		s.once('ping', function () { next() });
+		c.once('connect', function () {
+			c.send('ping', Array(1 << 20).join('.'));
+			c.disconnect();
+		});
+	});
+
 	it('should send acknowledgements', function (next) {
 		c.send('ping', next);
 	});
