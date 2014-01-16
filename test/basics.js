@@ -1,5 +1,6 @@
 var Uhura = require('../');
 var assert = require('assert');
+var tls = require('tls');
 
 function after (t, fn) {
 	return function () {
@@ -69,6 +70,49 @@ describe('basics', function () {
 		c.once('connect', function () {
 			c.send('ping', Array(1 << 20).join('.'));
 			c.disconnect();
+		});
+	});
+
+	it('should support TLS', function (next) {
+		// Ideally, we'd use something like AECDH-NULL-SHA here but
+		// node.js v0.10 doesn't support no-auth/no-enc ciphers...
+		// See https://github.com/joyent/node/issues/6887
+		var cert = '-----BEGIN CERTIFICATE-----\n' +
+			'MIIBfjCCASgCCQDmmNjAojbDQjANBgkqhkiG9w0BAQUFADBFMQswCQYDVQQGEwJB\n' +
+			'VTETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0\n' +
+			'cyBQdHkgTHRkMCAXDTE0MDExNjE3NTMxM1oYDzIyODcxMDMxMTc1MzEzWjBFMQsw\n' +
+			'CQYDVQQGEwJBVTETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJu\n' +
+			'ZXQgV2lkZ2l0cyBQdHkgTHRkMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAPKwlfMX\n' +
+			'6HGZIt1xm7fna72eWcOYfUfSxSugghvqYgJt2Oi3lH+wsU1O9FzRIVmpeIjDXhbp\n' +
+			'Mjsa1HtzSiccPXsCAwEAATANBgkqhkiG9w0BAQUFAANBAHOoKy0NkyfiYH7Ne5ka\n' +
+			'uvCyndyeB4d24FlfqEUlkfaWCZlNKRaV9YhLDiEg3BcIreFo4brtKQfZzTRs0GVm\n' +
+			'KHg=\n' +
+			'-----END CERTIFICATE-----';
+		var key = '-----BEGIN RSA PRIVATE KEY-----\n' +
+			'MIIBPQIBAAJBAPKwlfMX6HGZIt1xm7fna72eWcOYfUfSxSugghvqYgJt2Oi3lH+w\n' +
+			'sU1O9FzRIVmpeIjDXhbpMjsa1HtzSiccPXsCAwEAAQJBAM4uU9aJE0OfdE1p/X+K\n' +
+			'LrCT3XMdFCJ24GgmHyOURtwDy18upQJecDVdcZp16fjtOPmaW95GoYRyifB3R4I5\n' +
+			'RxECIQD7jRM9slCSVV8xp9kOJQNpHjhRQYVGBn+pyllS2sb+RQIhAPb7Y+BIccri\n' +
+			'NWnuhwCW8hA7Fkj/kaBdAwyW7L3Tvui/AiEAiqLCovMecre4Yi6GcsQ1b/6mvSmm\n' +
+			'IOS+AT6zIfXPTB0CIQCJKGR3ymN/Qw5crL1GQ41cHCQtF9ickOq/lBUW+j976wIh\n' +
+			'AOaJnkQrmurlRdePX6LvN/LgGAQoxwovfjcOYNnZsIVY\n' +
+			'-----END RSA PRIVATE KEY-----';
+		var options = {
+			cert: cert,
+			ciphers: 'NULL-MD5',
+			createServer: tls.createServer,
+			key: key
+		};
+		Uhura.createServer(options, function (c) {
+			c.on('ping', next);
+		}).listen(0, function () {
+			var options = {
+				createConnection: tls.connect,
+				ciphers: 'NULL-MD5',
+				port: this.address().port,
+				rejectUnauthorized: false  // Self-signed cert
+			};
+			Uhura.createClient(options).send('ping');
 		});
 	});
 
