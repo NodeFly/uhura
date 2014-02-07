@@ -107,10 +107,12 @@ describe('basics', function () {
 			c.on('ping', next);
 		}).listen(0, function () {
 			var options = {
-				createConnection: tls.connect,
 				ciphers: 'NULL-MD5',
 				port: this.address().port,
 				rejectUnauthorized: false  // Self-signed cert
+			};
+			options.createConnection = function (options, cb) {
+				cb(null, tls.connect(options));
 			};
 			Uhura.createClient(options).send('ping');
 		});
