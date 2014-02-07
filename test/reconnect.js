@@ -1,4 +1,5 @@
 var Uhura = require('../');
+var net = require('net');
 
 function after (t, fn) {
 	return function () {
@@ -24,9 +25,14 @@ describe('reconnection', function () {
 		});
 
 		server.listen(0, '127.0.0.1', function () {
-			c = Uhura.createClient({
+			var options = {
 				host: this.address().address,
 				port: this.address().port,
+			};
+			c = Uhura.createClient({
+				createConnection: function (_, cb) {
+					cb(null, net.connect(options));
+				},
 			});
 			c.autoReconnect();
 			c.on('connect', after(2, next));
