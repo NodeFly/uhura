@@ -6,8 +6,6 @@ function after (t, fn) {
 	};
 }
 
-var socket = 5000;
-
 describe('reconnection', function () {
 	this.timeout(5000);
 
@@ -24,12 +22,15 @@ describe('reconnection', function () {
 				s.socket.destroy();
 			}, 100);
 		});
-		server.listen(socket);
 
-		c = Uhura.createClient(socket);
-		c.autoReconnect();
-
-		c.on('connect', after(2, next));
+		server.listen(0, '127.0.0.1', function () {
+			c = Uhura.createClient({
+				host: this.address().address,
+				port: this.address().port,
+			});
+			c.autoReconnect();
+			c.on('connect', after(2, next));
+		});
 	});
 
 	it('should continue receiving events after reconnection', function (next) {
@@ -41,12 +42,16 @@ describe('reconnection', function () {
 				s.socket.destroy();
 			});
 		});
-		server.listen(socket);
 
-		c = Uhura.createClient(socket);
-		c.autoReconnect();
-		c.on('connect', function () {
-			c.send('ping');
+		server.listen(0, '127.0.0.1', function () {
+			c = Uhura.createClient({
+				host: this.address().address,
+				port: this.address().port,
+			});
+			c.autoReconnect();
+			c.on('connect', function () {
+				c.send('ping');
+			});
 		});
 	});
 
@@ -72,20 +77,25 @@ describe('reconnection', function () {
 				received.push(v);
 			});
 		});
-		server.listen(socket);
 
-		c = Uhura.createClient(socket);
+		server.listen(0, '127.0.0.1', function () {
+			c = Uhura.createClient({
+				host: this.address().address,
+				port: this.address().port,
+			});
 
-		// Send messages repeatedly
-		var timer = setInterval(function () {
-			var num = Math.floor(Math.random() * 1000);
-			c.send('ping', num);
-			sent.push(num);
-		}, 100);
+			// Send messages repeatedly
+			var timer = setInterval(function () {
+				var num = Math.floor(Math.random() * 1000);
+				c.send('ping', num);
+				sent.push(num);
+			}, 100);
 
-		c.on('connect', after(3, function () {
-			clearInterval(timer);
-		}));
-		c.autoReconnect();
+			c.on('connect', after(3, function () {
+				clearInterval(timer);
+			}));
+
+			c.autoReconnect();
+		});
 	});
 });
