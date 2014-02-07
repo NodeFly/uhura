@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "should": "*",
-    "mocha": "*",
+    "mocha": "strongloop/mocha#production",
     "istanbul": "~0.1.44"
   },
   "scripts": {
