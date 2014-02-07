@@ -13,9 +13,9 @@
     "node-uuid": "~1.4.1"
   },
   "devDependencies": {
-    "should": "*",
+    "should": "~3.1.2",
     "mocha": "strongloop/mocha#production",
-    "istanbul": "~0.1.44"
+    "istanbul": "~0.2.4"
   },
   "scripts": {
     "test": "istanbul test -- _mocha -r should -G -R spec",
