@@ -18,6 +18,7 @@
     "istanbul": "~0.1.44"
   },
   "scripts": {
-    "test": "istanbul test _mocha -r should -G -R spec"
+    "test": "istanbul test -- _mocha -r should -G -R spec",
+    "posttest": "test -z $npm_config_coverage || istanbul report"
   }
 }
