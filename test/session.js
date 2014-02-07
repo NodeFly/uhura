@@ -7,8 +7,6 @@ function after (t, fn) {
 	};
 }
 
-var socket = 5000;
-
 describe('session', function () {
 	this.timeout(5000);
 
@@ -25,22 +23,26 @@ describe('session', function () {
 				s.socket.destroy();
 			}, 100);
 		});
-		server.listen(socket);
-		
-		c = Uhura.createClient(socket);
-		c.autoReconnect();
 
-		var sessionID;
-		c.once('connect', function () {
-			sessionID = c.get('sessionID');
+		server.listen(0, '127.0.0.1', function () {
+			c = Uhura.createClient({
+				host: this.address().address,
+				port: this.address().port,
+			});
+			c.autoReconnect();
+
+			var sessionID;
+			c.once('connect', function () {
+				sessionID = c.get('sessionID');
+			});
+
+			c.on('connect', after(2, function () {
+				if (c.get('sessionID') !== sessionID) {
+					next(new Error('sessionID does not match'));
+				}
+				next();
+			}));
 		});
-
-		c.on('connect', after(2, function () {
-			if (c.get('sessionID') !== sessionID) {
-				next(new Error('sessionID does not match'));
-			}
-			next();
-		}));
 	});
 
 	it('should send changes to client', function (next) {
@@ -55,9 +57,13 @@ describe('session', function () {
 			
 			s.set('foo', 'bar');
 		});
-		server.listen(socket);
 
-		c = Uhura.createClient(socket);
+		server.listen(0, '127.0.0.1', function () {
+			c = Uhura.createClient({
+				host: this.address().address,
+				port: this.address().port,
+			});
+		});
 	});
 
 	it('should send changes to server', function (next) {
@@ -67,13 +73,17 @@ describe('session', function () {
 				s.socket.destroy();
 			});
 		});
-		server.listen(socket);
 
-		c = Uhura.createClient(socket);
-		c.on('connect', function () {
-			c.set('foo', 'bar');
+		server.listen(0, '127.0.0.1', function () {
+			c = Uhura.createClient({
+				host: this.address().address,
+				port: this.address().port,
+			});
+			c.on('connect', function () {
+				c.set('foo', 'bar');
+			});
+			c.on('disconnect', next);
 		});
-		c.on('disconnect', next);
 	});
 
 	it('should invalidate session', function (next) {
@@ -85,8 +95,12 @@ describe('session', function () {
 			});
 			s.invalidateSession();
 		});
-		server.listen(socket);
-		
-		c = Uhura.createClient(socket);
+
+		server.listen(0, '127.0.0.1', function () {
+			c = Uhura.createClient({
+				host: this.address().address,
+				port: this.address().port,
+			});
+		});
 	});
 });

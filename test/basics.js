@@ -18,8 +18,12 @@ describe('basics', function () {
 			s = socket;
 			done();
 		});
-		server.listen(5555);
-		c = Uhura.createClient(5555);
+		server.listen(0, '127.0.0.1', function () {
+			c = Uhura.createClient({
+				host: this.address().address,
+				port: this.address().port,
+			});
+		});
 	});
 
 	afterEach(function (next) {
@@ -105,12 +109,15 @@ describe('basics', function () {
 		};
 		Uhura.createServer(options, function (c) {
 			c.on('ping', next);
-		}).listen(0, function () {
+		}).listen(0, '127.0.0.1', function () {
 			var options = {
-				createConnection: tls.connect,
 				ciphers: 'NULL-MD5',
+				host: this.address().address,
 				port: this.address().port,
 				rejectUnauthorized: false  // Self-signed cert
+			};
+			options.createConnection = function (options, cb) {
+				cb(null, tls.connect(options));
 			};
 			Uhura.createClient(options).send('ping');
 		});
