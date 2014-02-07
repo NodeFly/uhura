@@ -1,4 +1,5 @@
 var Uhura = require('../');
+var assert = require('assert');
 var net = require('net');
 
 function after (t, fn) {
@@ -24,19 +25,36 @@ describe('reconnection', function () {
 			}, 100);
 		});
 
+		var options = null;
 		server.listen(0, '127.0.0.1', function () {
-			var options = {
+			options = {
 				host: this.address().address,
 				port: this.address().port,
 			};
 			c = Uhura.createClient({
-				createConnection: function (_, cb) {
-					cb(null, net.connect(options));
-				},
+				createConnection: createConnection,
 			});
+			c.unref();
 			c.autoReconnect();
-			c.on('connect', after(2, next));
+			c.on('connect', after(2, done));
 		});
+
+		var unrefCalls = 0;
+		function createConnection (_, cb) {
+			var socket = net.connect(options);
+			socket.unref = (function (unref) {
+				return function () {
+					unrefCalls += 1;
+					return unref.apply(this, arguments);
+				};
+			})(socket.unref);
+			cb(null, socket);
+		}
+
+		function done () {
+			assert.equal(unrefCalls, 2);
+			next();
+		}
 	});
 
 	it('should continue receiving events after reconnection', function (next) {
