@@ -82,7 +82,7 @@ describe('session', function () {
 			c.on('connect', function () {
 				c.set('foo', 'bar');
 			});
-			c.on('disconnect', next);
+			c.on('uhura:local:disconnect', next);
 		});
 	});
 

@@ -45,8 +45,8 @@ describe('basics', function () {
 		c.send('ping');
 	});
 
-	it('should emit disconnect on socket.destroy()', function (next) {
-		c.once('disconnect', next);
+	it('should emit uhura:local:disconnect on socket.destroy()', function (next) {
+		c.once('uhura:local:disconnect', next);
 		s.socket.destroy();
 	});
 

@@ -115,7 +115,7 @@ describe('reconnection', function () {
 				sent.push(num);
 			}, 100);
 
-			c.on('connect', after(3, function () {
+			c.on('uhura:local:connect', after(3, function () {
 				clearInterval(timer);
 			}));
 
