@@ -13,12 +13,12 @@
     "node-uuid": "~1.4.1"
   },
   "devDependencies": {
-    "should": "*",
-    "mocha": "*",
-    "istanbul": "~0.1.44"
+    "should": "~3.1.2",
+    "mocha": "strongloop/mocha#production",
+    "istanbul": "~0.2.4"
   },
   "scripts": {
-    "test": "mocha -r should -G -R spec",
-    "coverage": "rm -rf coverage && istanbul cover _mocha -- -r should -G -R spec; istanbul report"
+    "test": "istanbul test -- _mocha -r should -G -R spec",
+    "posttest": "test -z $npm_config_coverage || istanbul report"
   }
 }
