@@ -109,10 +109,11 @@ describe('reconnection', function () {
 			});
 
 			// Send messages repeatedly
+			var index = 0;
 			var timer = setInterval(function () {
-				var num = Math.floor(Math.random() * 1000);
-				c.send('ping', num);
-				sent.push(num);
+				c.send('ping', index);
+				sent.push(index);
+				index += 1;
 			}, 100);
 
 			c.on('uhura:local:connect', after(3, function () {
