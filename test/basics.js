@@ -1,5 +1,6 @@
 var Uhura = require('../');
 var assert = require('assert');
+var net = require('net');
 var tls = require('tls');
 
 function after (t, fn) {
@@ -59,6 +60,30 @@ describe('basics', function () {
 		};
 		c.socket.emit('error', new Error('This is an error'));
 		s.socket.destroy();
+	});
+
+	it('should send pending writes', function (next) {
+		var server = Uhura.createServer(function (conn) {
+			conn.on('ping', function () {
+				conn.socket.destroy();
+				next();
+			});
+		});
+		server.listen(0, '127.0.0.1', function () {
+			var client = Uhura.createClient({
+				host: this.address().address,
+				port: this.address().port,
+				createConnection: function (options, cb) {
+					setImmediate(function () {
+						cb(null, net.connect(options));
+					});
+				},
+			});
+			assert(client.serializer == null);
+			assert(client.queues.payload.length === 0);
+			client.send('ping');
+			assert(client.queues.payload.length === 1);
+		});
 	});
 
 	it('should not crash on malformed JSON', function (next) {
