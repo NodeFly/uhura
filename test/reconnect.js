@@ -116,10 +116,6 @@ describe('reconnection', function () {
 				index += 1;
 			}, 100);
 
-			c.on('uhura:local:connect', after(3, function () {
-				clearInterval(timer);
-			}));
-
 			c.autoReconnect();
 		});
 	});
