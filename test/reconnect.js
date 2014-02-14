@@ -94,7 +94,7 @@ describe('reconnection', function () {
 			setTimeout(function () {
 				s.socket.destroy();
 				done();
-			}, 250);
+			}, 100);
 
 			// Push received pings to list
 			s.on('ping', function (v) {
@@ -114,7 +114,7 @@ describe('reconnection', function () {
 				c.send('ping', index);
 				sent.push(index);
 				index += 1;
-			}, 100);
+			}, 33);
 
 			c.autoReconnect();
 		});
