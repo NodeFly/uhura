@@ -8,9 +8,9 @@
   "license": "MIT",
   "dependencies": {
     "JSONStream": "0.6.x",
-    "connect": "2.8.x",
     "uid2": "0.0.x",
-    "node-uuid": "~1.4.1"
+    "node-uuid": "~1.4.1",
+    "express-session": "~1.0.2"
   },
   "devDependencies": {
     "should": "~3.1.2",
